@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load bootstrap4 %}
+{% load widget_tweaks %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        label {
+            color: rgb(253, 253, 253);
+            font-weight: bold;
+        }
+
+        body {
+            background-image: url("{% static 'solicitud.jpg' %}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .form-container {
+            width: 50%;
+            margin: auto;
+            margin-left: 10%;
+            background-color: rgba(105, 26, 48, 0.579);
+            padding: 20px;
+            border-radius: 30px;
+        }
+        button[type="submit"] {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #B38E5D;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="form-container">
+        <!--Formulario para creación de solicitudes nuevas, por parte de los ciudadanos-->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.titulo.id_for_label }}">Titulo</label>
+                {{ form.titulo|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.lista_desplegable.id_for_label }}">Tipo de reporte</label>
+                {{ form.lista_desplegable|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.descripcion.id_for_label }}">Descripción de la solicitud a atender</label>
+                {{ form.descripcion|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <!--Adjuntar archivos opcional. Dando click en el checkbox, se habilita el botón para subir archivos de evidencia-->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="adjuntar-archivo-checkbox">
+                    <label class="form-check-label" for="adjuntar-archivo-checkbox">
+                        Adjuntar un archivo
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="archivo-field" style="display: none;">
+                <input type="file" id="{{ form.adjuntos.id_for_label }}" name="{{ form.adjuntos.name }}">
+            </div>
+            <!--Fecha de reporte no visible para el usuario, se asigna la fecha actual automáticamente, para facilitar el llenado del formulario-->
+            <div class="form-group" style="display: none;">
+                <label for="{{ form.fecha_reporte.id_for_label }}">Fecha de reporte</label>
+                {{ form.fecha_reporte|add_class:"form-control" }}
+            </div>
+            <button class="btn" type="submit"{% if solicitud %} disabled {% endif %}>Enviar solicitud</button>
+            <a class="btn btn-secondary" href="{% url 'inicio' %}">Cancelar</a>
+        </form>
+        <!--Al dar click en enviar, se le proporciona el número de reporte al ciudadano, para que pueda dar seguimiento a su reporte-->
+        {% if solicitud %}
+            <p style="color: white;">Su número de reporte es: <p style="font-weight: bolder; font-size: 24px; color: white;">{{ solicitud.pk }}</p></p>
+        {% endif %}
+
+        <script>
+            const checkbox = document.getElementById('adjuntar-archivo-checkbox');
+            const campoArchivo = document.getElementById('archivo-field');
+
+            campoArchivo.style.display = 'none';
+
+            checkbox.addEventListener('change', function () {
+                campoArchivo.style.display = checkbox.checked ? 'block' : 'none';
+            });
+        </script>
+    </div>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Listado de Solicitudes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'lista_solicitudes.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: black;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn:hover {
+        background-color: #B38E5D; /* Cambia el color al pasar el cursor sobre el botón */
+    }
+    </style>
+</head>
+<body>
+    <h1>Listado de Solicitudes</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Reporte</th>
+                <th>Título</th>
+                <th>Tipo de Solicitud</th>
+                <th>Fecha del Reporte</th>
+                <th>Descripción</th>
+                <th>Adjuntos</th>
+                <th>Respuesta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--Muestra la lista de solicitudes enviadas a la base de datos-->
+            {% for solicitud in solicitudes %}
+                <tr>
+                    <td>{{ solicitud.pk }}</td>
+                    <td>{{ solicitud.titulo }}</td>
+                    <td>{{ solicitud.get_lista_desplegable_display }}</td>
+                    <td>{{ solicitud.fecha_reporte }}</td>
+                    <td>{{ solicitud.descripcion }}</td>
+                    <td>
+                        {% if solicitud.adjuntos %}
+                            <a href="{{ solicitud.adjuntos.archivo.url }}" target="_blank">Ver Adjunto</a>
+                        {% else %}
+                            No hay adjuntos
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!--Si el usuario es un ciudadano, muestra la respuesta sin hipervínculo-->
+                        {% if solicitud.respuestas_set.all %}
+                            {% for respuesta in solicitud.respuestas_set.all %}
+                                {{ respuesta.respuesta_servidor }}
+                            {% endfor %}
+                        {% else %}
+                        <!--Si el usuario es un servidor público y el reporte no tiene respuesta, crea el hipervínculo a la página de respuesta del reporte-->
+                            {% if user.is_authenticated %}
+                                Sin respuesta - <a href="{% url 'respuesta' solicitud_id=solicitud.pk %}">Agregar Respuesta</a>
+                            {% else %}
+                                Sin respuesta
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'inicio' %}" class="btn">Regresar a Inicio</a>
+    </div>
+</body>
+</html>
+{% endblock %}
+

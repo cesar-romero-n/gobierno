@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buscar Solicitud por ID</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'lista_solicitudes.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button[type="submit"] {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #B38E5D;
+            color: white;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+
+        .solicitud-info {
+            background-color: white;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Búsqueda por número de solicitud</h1>
+    <form method="GET" action="{% url 'solicitud_existente' %}">
+        <label for="solicitud_id" style="color: white;">ID de Solicitud:</label>
+        <input type="number" name="id" id="solicitud_id" required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!--Si el número de solicitud no es encontrada, muestra mensaje de error-->
+    {% if error_message %}
+        <p class="error-message">{{ error_message }}</p>
+    {% elif solicitud %}
+        <div class="solicitud-info">
+            <h2>Solicitud Encontrada</h2>
+            <table>
+                <tr><th>ID</th><td>{{ solicitud.pk }}</td></tr>
+                <tr><th>Título</th><td>{{ solicitud.titulo }}</td></tr>
+                <tr><th>Fecha de Reporte</th><td>{{ solicitud.fecha_reporte }}</td></tr>
+                <tr><th>Descripción</th><td>{{ solicitud.descripcion }}</td></tr>
+                <tr>
+                    <th>Respuesta</th>
+                    <td>
+                        <ul>
+                            {% for respuesta in solicitud.respuestas_set.all %}
+                            <li>
+                                <!--Si la solicitud aún no tiene respuesta, y el usuario no está autenticado, muestra "Sin respuesta"-->
+                                {% if respuesta.respuesta_servidor == "Sin respuesta" %}
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'respuesta' solicitud_id=solicitud.pk %}">
+                                            {{ respuesta.respuesta_servidor }}
+                                        </a>
+                                    {% else %}
+                                        {{ respuesta.respuesta_servidor }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ respuesta.respuesta_servidor }}
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li class="no-response">
+                                <!--Si la solicitud aún no tiene respuesta, y el usuario está autenticado, habilita un hipervínculo para ir a la página de respuesta de la solicitud-->
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'respuesta' solicitud_id=solicitud.pk %}">
+                                        Sin respuesta - click para responder
+                                    </a>
+                                {% else %}
+                                    Sin respuesta
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}

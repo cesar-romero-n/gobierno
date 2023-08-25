@@ -1,0 +1,61 @@
+{% load bootstrap4 %}
+{% load widget_tweaks %}
+
+<html>
+    <head>
+        {% bootstrap_css %}
+    </head>
+
+    <body>
+        <header>
+            <!-- navbar-->
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                {% load static %}
+                <a class="navbar-brand" href="#"> <!-- Logo en png de Gobierno de México, que redirige a Inicio-->
+                    <img src="{% static 'gobierno_logo.png' %}" width=13% height=auto alt="">
+                </a>
+                
+                <!-- Botón de alternancia-->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+                <!-- Contenido del menú colapsable -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Lista de elementos del menú-->
+                    <ul class="navbar-nav ml-auto">
+                        <!--Comprueba que el user esté autenticado, y enseguida comprueba que sea administrador-->
+                        {% if user.is_authenticated %}
+                            {% if not user.is_superuser %} <!--Si es admin, sólo puede ver la página de creación de usuario o logout-->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'inicio' %}" style="color: white;">Inicio</a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'logout' %}" style="color: white;">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inicio' %}" style="color: white;">Inicio</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}" style="color: white;">Login de servidores públicos</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    
+                </div>
+
+
+            </nav>
+        </header>
+        <main>
+            {% block content%}
+            {% endblock %}
+
+        </main>
+        {% bootstrap_javascript %}
+    </body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+    /* Keep the existing styles for the body background */
+    body {
+        background-image: url("{% static 'login_servidores.jpg' %}");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    /* Custom styles for the login container */
+    .login-container {
+        /* Center the container */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .login-container label,
+    .login-container input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .login-container input[type="submit"] {
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .login-container input[type="submit"]:hover {
+        background-color: #B38E5D;
+        color: white;
+    }
+
+    .error-message {
+        color: red;
+        margin-top: 10px;
+    }
+
+    .forgot-password {
+        color: #007bff;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="login-container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tag %} class="{{ message.tags }}" {% endif %}> {{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post"> <!--Formulario de login de usuarios-->
+        {% csrf_token %}
+        <label for="username" style="font-weight: bold;">Usuario</label>
+        <input type="text" name="username" id="username" required>
+        
+        <label for="password" style="font-weight: bold;">Contraseña</label>
+        <input type="password" name="password" id="password">
+        
+        <input type="submit" value="Entrar">
+    </form>
+
+   <!--Si la contraseña es incorrecta, le muestra mensaje de error, y habilita el link de recuperación de contraseña-->
+    {% if request.method == 'POST' and not request.user.is_authenticated %}
+    <p class="error-message">Contraseña incorrecta, intenta de nuevo.</p>
+    <a href="{% url 'password_reset' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+    {% endif %}
+
+     <!--Si el user es administrador, lo redirige a la página de creación de usuarios-->
+    {% if request.method == 'POST' and request.user.is_authenticated and request.user.is_superuser %}
+    <script>
+        window.location.href = "{% url 'crear_usuario' %}";
+    </script>
+    {% endif %}
+</div>
+
+{% endblock %}

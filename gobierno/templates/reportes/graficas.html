@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reportes</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Gráficas de Reportes</h1>
+
+    <div style="width: 50%; margin: auto;">
+        <canvas id="reportesChart"></canvas>
+    </div>
+
+    <div style="width: 50%; margin: auto;">
+        <canvas id="fechasChart"></canvas>
+    </div>
+
+    <script>
+        // Datos de ejemplo (debes reemplazar estos con tus datos reales)
+        var data = {
+            labels: ["Reportes Respondidos", "Reportes Sin Respuesta"],
+            datasets: [{
+                label: "Reportes",
+                data: [15, 5], // Cambiar estos valores
+                backgroundColor: ["green", "red"]
+            }]
+        };
+
+        var dataFechas = {
+            labels: ["Diferencia Promedio"],
+            datasets: [{
+                label: "Diferencia Promedio",
+                data: [5], // Cambiar este valor
+                backgroundColor: "blue"
+            }]
+        };
+
+        // Opciones de gráfico
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false
+        };
+
+        // Crear gráfico de reportes
+        var ctx = document.getElementById("reportesChart").getContext("2d");
+        var reportesChart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+        // Crear gráfico de fechas
+        var ctxFechas = document.getElementById("fechasChart").getContext("2d");
+        var fechasChart = new Chart(ctxFechas, {
+            type: "bar",
+            data: dataFechas,
+            options: options
+        });
+    </script>
+</body>
+</html>

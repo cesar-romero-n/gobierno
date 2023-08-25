@@ -1,0 +1,4 @@
+Me quedé en agregar algo (Lo que sea) a inicio.html. En la clase del 8 e Junio, se corta media hora, donde agregan el "Título" en azul. Debe faltar solamente copiar y pegar algo en inicio, para empezar a trabajar en el proyecto.
+Ya está creado el superuser, la base de datos, mysql instalado en cmd, y settings.py orientado a la BD.
+
+Hay que ver la clase del 13 de Junio para continuar donde me quedé.
